@@ -1,0 +1,33 @@
+{
+	"name": "Dev Containers docker-alpine-images",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"VARIANT": "ubuntu24.04"
+		}
+	},
+	"mounts": [
+		"source=dev-containers-docker-alpine-images-bashhistory,target=/home/vscode/commandhistory"
+	],
+	"remoteUser": "vscode",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:4.0.0": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot"
+			]
+		},
+		"codespaces": {
+			"repositories": {
+				"devcontainers/features": {
+					"permissions": {
+						"contents": "write",
+						"workflows": "write"
+					}
+				}
+			}
+		}
+	}
+}
