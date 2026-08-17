@@ -1,10 +1,11 @@
-name: Manual Docker Build All Alpine
+---
+name: Docker Build Push Alpine Images
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-push:
     runs-on: ubuntu-latest
     env:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -29,14 +30,11 @@ jobs:
       - name: Enable BuildKit
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
 
-      - name: Run install.sh
+      - name: Run install, update and build script
         run: |
-          make install
-
-      - name: Run update.sh
-        run: |
-          make update image=alpine
-
-      - name: Run build_all.sh
-        run: |
-          make build_all image=alpine
+          chmod +x ./src/install.sh
+          chmod +x ./src/update.sh
+          chmod +x ./src/build_all.sh
+          ./src/install.sh
+          ./src/update.sh
+          ./src/build_all.sh
