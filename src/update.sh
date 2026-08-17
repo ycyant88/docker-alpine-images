@@ -24,10 +24,8 @@ function alpine()
     local path=src/alpine
     echo "${latest_versions}" > "${path}/.alpine-versions"
     cat "${path}/.alpine-versions" | head -n 1 > "${path}/.alpine-version"
-    echo "${path}/.alpine-version:"
-    cat "${path}/.alpine-version"
-    echo "${path}/.alpine-versions:"
-    cat "${path}/.alpine-versions"
+    echo "${path}/.alpine-version:" && cat "${path}/.alpine-version"
+    echo "${path}/.alpine-versions:" && cat "${path}/.alpine-versions"
 }
 
 "$@"
