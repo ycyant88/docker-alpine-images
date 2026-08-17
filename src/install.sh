@@ -7,8 +7,8 @@ echo "==> Running $(dirname "$(realpath "$0")")/install.sh"
 
 function install_apt()
 {
-    $(which sudo) apt-get update
-    $(which sudo) apt-get install -y curl git gzip tar make
+    $(which sudo) apt update
+    $(which sudo) apt install -y curl git gzip tar make
 }
 
 function install_crane()
