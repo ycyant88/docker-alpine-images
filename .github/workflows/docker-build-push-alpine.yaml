@@ -36,5 +36,5 @@ jobs:
           chmod +x ./src/update.sh
           chmod +x ./src/build_all.sh
           ./src/install.sh
-          ./src/update.sh
-          ./src/build_all.sh
+          ./src/update.sh alpine
+          ./src/build_all.sh alpine
