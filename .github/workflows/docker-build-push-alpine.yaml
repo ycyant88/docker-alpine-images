@@ -3,14 +3,25 @@ name: Docker Build Push Alpine Images
 
 on:
   workflow_dispatch:
+    inputs:
+      build-test:
+        description: 'Set to true to run matrix tests on manual dispatch'
+        required: false
+        default: 'false'
+  schedule:
+    - cron: '0 5 * * *'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
 
 jobs:
   build-push:
+    if: >
+      github.event_name != 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.run-tests == 'false')
     runs-on: ubuntu-latest
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,11 +41,44 @@ jobs:
       - name: Enable BuildKit
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
 
-      - name: Run install, update and build script
+      - name: Run install and build_all script
         run: |
           chmod +x ./src/install.sh
-          chmod +x ./src/update.sh
           chmod +x ./src/build_all.sh
           ./src/install.sh
-          ./src/update.sh alpine
           ./src/build_all.sh alpine
+
+  build-test:
+    if: >
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.run-tests == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare and run arch-specific test
+        run: |
+          chmod +x ./src/build_test.sh
+          ./src/build_test.sh alpine
+
+  update-tags:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run scheduled update
+        run: |
+          chmod +x ./src/update.sh
+          ./src/update.sh alpine
+
+      - name: Create a branch and open a PR if there are changes
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: schedule update via update.sh"
+          title: "chore: schedule update via update.sh"
+          body: "Automated update produced by update.sh (scheduled)"
+          branch: "auto/update/alpine-${{ github.run_id }}"

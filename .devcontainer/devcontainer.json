@@ -11,13 +11,17 @@
 	],
 	"remoteUser": "vscode",
 	"features": {
+		"ghcr.io/devcontainers/features/aws-cli:1": {},
 		"ghcr.io/devcontainers/features/copilot-cli:1": {},
-		"ghcr.io/devcontainers/features/docker-in-docker:4.0.0": {}
+		"ghcr.io/devcontainers/features/docker-in-docker:4.0.0": {
+			"moby": true,
+			"installDockerBuildx": true
+		}
 	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"GitHub.copilot",
+				"github.copilot-chat",
 				"hashicorp.hcl"
 			]
 		}
