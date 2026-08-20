@@ -44,9 +44,8 @@ target "push" {
 
 target "test" {
   inherits  = ["settings", "metadata", "annotations"]
-  output    = ["type=registry"]
+  output    = ["type=cacheonly"]
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = []
 }
 
 target "settings" {
