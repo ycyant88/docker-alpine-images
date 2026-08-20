@@ -20,7 +20,7 @@ jobs:
   build-push:
     if: >
       github.event_name != 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.run-tests == 'false')
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.build-test == 'false')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -51,15 +51,26 @@ jobs:
   build-test:
     if: >
       github.event_name != 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.run-tests == 'true')
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.build-test == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up QEMU (for cross-platform builds)
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Enable BuildKit
+        run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
+
       - name: Prepare and run arch-specific test
         run: |
+          chmod +x ./src/install.sh
           chmod +x ./src/build_test.sh
+          ./src/install.sh
           ./src/build_test.sh alpine
 
   update-tags:
