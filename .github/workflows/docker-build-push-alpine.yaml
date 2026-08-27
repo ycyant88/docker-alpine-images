@@ -3,27 +3,9 @@ name: Docker Build Push Alpine Images
 
 on:
   workflow_dispatch:
-    inputs:
-      build-test:
-        description: 'Set to true to run matrix tests on manual dispatch'
-        required: false
-        default: false
-        type: string
-
-  schedule:
-    - cron: '0 5 * * *'
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-permissions:
-  contents: write
-  pull-requests: write
 
 jobs:
   build-push:
-    if: >
-      github.event_name != 'pull_request' &&
-      (github.event_name != 'workflow_dispatch' || inputs.build-test == 'false')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -50,40 +32,3 @@ jobs:
           chmod +x ./src/build_all.sh
           ./src/install.sh
           ./src/build_all.sh alpine
-
-  build-test:
-    if: >
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && inputs.build-test == 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU (for cross-platform builds)
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Enable BuildKit
-        run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
-
-      - name: Prepare and run arch-specific test
-        run: |
-          chmod +x ./src/install.sh
-          chmod +x ./src/build_test.sh
-          ./src/install.sh
-          ./src/build_test.sh alpine
-
-  update-tags:
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run scheduled update
-        run: |
-          chmod +x ./src/update.sh
-          ./src/update.sh alpine
