@@ -78,20 +78,24 @@ jobs:
 
   update-tags:
     # if: github.event_name == 'schedule'
-    if: >
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && inputs.build-test == 'schedule')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Run scheduled update
+        id: update
         run: |
           chmod +x ./src/update.sh
           ./src/update.sh alpine
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Create a branch and open a PR if there are changes
+        if: steps.update.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
