@@ -26,6 +26,33 @@ function alpine()
     cat "${path}/.alpine-versions" | head -n 1 > "${path}/.alpine-version"
     echo "${path}/.alpine-version:" && cat "${path}/.alpine-version"
     echo "${path}/.alpine-versions:" && cat "${path}/.alpine-versions"
+
+    # update src/terraform
+    local path=src/terraform
+    echo "${latest_versions}" > "${path}/.alpine-versions"
+    cat "${path}/.alpine-versions" | head -n 1 > "${path}/.alpine-version"
+    echo "${path}/.alpine-version:" && cat "${path}/.alpine-version"
+    echo "${path}/.alpine-versions:" && cat "${path}/.alpine-versions"
+}
+
+function terraform()
+{
+    local image_registry="public.ecr.aws"
+    local image_name="hashicorp/terraform"
+    local count=0
+
+    until latest_versions=$(crane ls "${image_registry}/${image_name}" 2>/dev/null | grep -E "${regex_patch_semver}" | sort -Vr) && [ -n "$latest_versions" ] || [ $count -eq 5 ]; do
+        count=$((count + 1))
+        echo "     Rate limited or empty response. Retrying ($count/5)..."
+        sleep 5
+    done
+
+    # update src/terraform
+    local path=src/terraform
+    echo "${latest_versions}" > "${path}/.terraform-versions"
+    cat "${path}/.terraform-versions" | head -n 1 > "${path}/.terraform-version"
+    echo "${path}/.terraform-version:" && cat "${path}/.terraform-version"
+    echo "${path}/.terraform-versions:" && cat "${path}/.terraform-versions"
 }
 
 "$@"
