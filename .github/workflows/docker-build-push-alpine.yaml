@@ -6,6 +6,9 @@ on:
     inputs:
       build-test:
         description: 'Set to true to run matrix tests on manual dispatch'
+        required: false
+        default: false
+        type: boolean
 
   schedule:
     - cron: '0 5 * * *'
@@ -19,8 +22,8 @@ permissions:
 jobs:
   build-push:
     if: >
-      github.event_name != 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.build-test != 'true')
+      github.event_name != 'pull_request' &&
+      (github.event_name != 'workflow_dispatch' || inputs.build-test != true)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -51,7 +54,7 @@ jobs:
   build-test:
     if: >
       github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.build-test == 'true')
+      (github.event_name == 'workflow_dispatch' && inputs.build-test == true)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
