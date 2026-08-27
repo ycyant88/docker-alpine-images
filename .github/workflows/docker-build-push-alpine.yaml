@@ -7,7 +7,9 @@ on:
       build-test:
         description: 'Set to true to run matrix tests on manual dispatch'
         required: false
-        default: 'false'
+        default: false
+        type: string
+
   schedule:
     - cron: '0 5 * * *'
   pull_request:
@@ -20,8 +22,8 @@ permissions:
 jobs:
   build-push:
     if: >
-      github.event_name != 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.build-test != 'true')
+      github.event_name != 'pull_request' &&
+      (github.event_name != 'workflow_dispatch' || inputs.build-test == 'false')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -52,7 +54,7 @@ jobs:
   build-test:
     if: >
       github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.build-test == 'true')
+      (github.event_name == 'workflow_dispatch' && inputs.build-test == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -85,12 +87,3 @@ jobs:
         run: |
           chmod +x ./src/update.sh
           ./src/update.sh alpine
-
-      - name: Create a branch and open a PR if there are changes
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: schedule update via update.sh"
-          title: "chore: schedule update via update.sh"
-          body: "Automated update produced by update.sh (scheduled)"
-          branch: "auto/update/alpine-${{ github.run_id }}"
