@@ -1,10 +1,7 @@
 {
 	"name": "Dev Containers docker-alpine-images",
 	"build": {
-		"dockerfile": "Dockerfile",
-		"args": {
-			"VARIANT": "ubuntu24.04"
-		}
+		"dockerfile": "Dockerfile"
 	},
 	"mounts": [
 		"source=dev-containers-docker-alpine-images-bashhistory,target=/home/vscode/commandhistory"

@@ -1,5 +1,5 @@
 ---
-name: Docker Build Push Alpine Images
+name: Docker Build Push Terraform Images
 
 on:
   workflow_dispatch:
@@ -45,7 +45,7 @@ jobs:
           chmod +x ./src/install.sh
           chmod +x ./src/build_all.sh
           ./src/install.sh
-          ./src/build_all.sh alpine
+          ./src/build_all.sh terraform
 
   build-test:
     if: >
@@ -70,4 +70,4 @@ jobs:
           chmod +x ./src/install.sh
           chmod +x ./src/build_test.sh
           ./src/install.sh
-          ./src/build_test.sh alpine
+          ./src/build_test.sh terraform
