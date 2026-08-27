@@ -6,8 +6,7 @@ on:
     inputs:
       build-test:
         description: 'Set to true to run matrix tests on manual dispatch'
-        required: false
-        default: 'false'
+
   schedule:
     - cron: '0 5 * * *'
   pull_request:
