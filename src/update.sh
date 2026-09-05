@@ -27,3 +27,5 @@ function alpine()
     echo "${path}/.alpine-version:" && cat "${path}/.alpine-version"
     echo "${path}/.alpine-versions:" && cat "${path}/.alpine-versions"
 }
+
+"$@"

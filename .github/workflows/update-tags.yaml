@@ -1,5 +1,5 @@
 ---
-name: Update Alpine tags
+name: Update tags
 
 on:
   schedule:
