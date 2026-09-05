@@ -8,7 +8,7 @@ on:
       - 'src/alpine/.alpine-versions'
 
 jobs:
-  docker-push:
+  docker-push-latest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

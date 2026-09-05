@@ -1,5 +1,5 @@
 ---
-name: Docker push latest Alpine images
+name: Docker push Alpine images
 
 on:
   workflow_dispatch:
